@@ -468,6 +468,12 @@ img {
   gap: 16px;
 }
 
+.role-switch {
+  display: inline-flex;
+  width: fit-content;
+  gap: 8px;
+}
+
 .field {
   display: grid;
   gap: 8px;

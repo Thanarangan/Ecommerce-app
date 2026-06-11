@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import {
+  BadgeDollarSign,
   History,
   Home,
+  LayoutDashboard,
   LogOut,
   Menu,
+  PackagePlus,
   PackageSearch,
   ShoppingBag,
   User,
@@ -14,11 +17,17 @@ import { useAuth } from '../hooks/useAuth'
 import { useCart } from '../hooks/useCart'
 import { getInitials } from '../utils/formatters'
 
-const navItems = [
+const customerNavItems = [
   { icon: Home, label: 'Home', to: '/' },
   { icon: PackageSearch, label: 'Products', to: '/products' },
   { icon: History, label: 'Orders', to: '/orders' },
   { icon: User, label: 'Profile', to: '/profile' },
+]
+
+const sellerNavItems = [
+  { icon: LayoutDashboard, label: 'Dashboard', to: '/seller' },
+  { icon: PackagePlus, label: 'Add Product', to: '/seller/add-product' },
+  { icon: BadgeDollarSign, label: 'Transactions', to: '/seller/transactions' },
 ]
 
 export function Header() {
@@ -26,6 +35,10 @@ export function Header() {
   const { totalItems } = useCart()
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const isSeller = String(user?.role || '').toUpperCase() === 'SELLER'
+  const navItems = isSeller ? sellerNavItems : customerNavItems
+  const homePath = isSeller ? '/seller' : '/'
+  const profilePath = isSeller ? '/seller' : '/profile'
 
   function handleLogout() {
     logout()
@@ -34,7 +47,7 @@ export function Header() {
 
   return (
     <header className="app-header">
-      <Link className="brand" to="/" onClick={() => setMenuOpen(false)}>
+      <Link className="brand" to={homePath} onClick={() => setMenuOpen(false)}>
         <span className="brand__mark" aria-hidden="true">
           <ShoppingBag size={22} />
         </span>
@@ -72,12 +85,14 @@ export function Header() {
       </nav>
 
       <div className="app-header__actions">
-        <Link className="cart-link" to="/cart">
-          <ShoppingBag size={18} />
-          <span>Cart</span>
-          <strong>{totalItems}</strong>
-        </Link>
-        <Link className="avatar" to="/profile" title="Profile">
+        {!isSeller ? (
+          <Link className="cart-link" to="/cart">
+            <ShoppingBag size={18} />
+            <span>Cart</span>
+            <strong>{totalItems}</strong>
+          </Link>
+        ) : null}
+        <Link className="avatar" to={profilePath} title="Profile">
           {getInitials(user?.username || user?.email)}
         </Link>
         <button

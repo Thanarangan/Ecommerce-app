@@ -15,6 +15,13 @@ export const API_ENDPOINTS = {
     orderHistory: '/customer/orderhistory',
     cancelOrder: '/customer/cancelorder',
   },
+  seller: {
+    dashboard: '/seller/dashboard',
+    addProduct: '/seller/addProduct',
+    deleteProduct: '/seller/deleteproduct',
+    transactions: '/seller/transactions',
+    revenue: '/seller/revenue',
+  },
 }
 
 export const API_TIMEOUT_MS = 20000

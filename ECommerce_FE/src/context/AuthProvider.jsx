@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { configureHttpClient } from '../api/httpClient'
-import { loginUser, registerUser } from '../services/authService'
+import {
+  loginUser,
+  registerUser,
+  validateSessionForRole,
+} from '../services/authService'
 import { getJwtEmail, getJwtExpiryMs, isJwtExpired } from '../utils/jwt'
 import {
   readJson,
@@ -66,18 +70,34 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = useCallback(
-    async ({ email, password }) => {
+    async ({ email, password, role = 'CUSTOMER' }) => {
+      const normalizedRole = String(role).toUpperCase()
       const nextToken = await loginUser({ email, password })
-      return applySession(nextToken, { email })
+      const nextUser = applySession(nextToken, { email, role: normalizedRole })
+
+      try {
+        await validateSessionForRole(normalizedRole)
+      } catch (requestError) {
+        logout()
+        throw requestError
+      }
+
+      return nextUser
     },
-    [applySession],
+    [applySession, logout],
   )
 
   const register = useCallback(
-    async ({ username, email, password }) => {
-      const message = await registerUser({ username, email, password })
+    async ({ username, email, password, role = 'CUSTOMER' }) => {
+      const normalizedRole = String(role).toUpperCase()
+      const message = await registerUser({
+        username,
+        email,
+        password,
+        role: normalizedRole,
+      })
       const nextToken = await loginUser({ email, password })
-      applySession(nextToken, { username, email, role: 'CUSTOMER' })
+      applySession(nextToken, { username, email, role: normalizedRole })
 
       return message
     },

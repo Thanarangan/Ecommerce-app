@@ -9,10 +9,12 @@ export function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const [form, setForm] = useState({ email: '', password: '' })
+  const [form, setForm] = useState({ email: '', password: '', role: 'CUSTOMER' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const redirectTo = location.state?.from?.pathname || '/'
+  const redirectTo =
+    location.state?.from?.pathname ||
+    (form.role === 'SELLER' ? '/seller' : '/')
 
   function updateField(event) {
     setForm((current) => ({
@@ -41,10 +43,27 @@ export function LoginPage() {
       <div className="auth-card__header">
         <p className="eyebrow">Welcome back</p>
         <h1>Login to your account</h1>
-        <p>Use your customer credentials to access the store.</p>
+        <p>Choose customer or seller login, then enter your credentials.</p>
       </div>
 
       <form className="form-stack" onSubmit={handleSubmit}>
+        <div className="role-switch" role="group" aria-label="Account type">
+          <button
+            className={form.role === 'CUSTOMER' ? 'chip chip--active' : 'chip'}
+            type="button"
+            onClick={() => setForm((current) => ({ ...current, role: 'CUSTOMER' }))}
+          >
+            Customer
+          </button>
+          <button
+            className={form.role === 'SELLER' ? 'chip chip--active' : 'chip'}
+            type="button"
+            onClick={() => setForm((current) => ({ ...current, role: 'SELLER' }))}
+          >
+            Seller
+          </button>
+        </div>
+
         <label className="field">
           <span>Email</span>
           <div className="field__control">
@@ -85,7 +104,7 @@ export function LoginPage() {
       </form>
 
       <p className="auth-switch">
-        New here? <Link to="/register">Create a customer account</Link>
+        New here? <Link to="/register">Create an account</Link>
       </p>
     </>
   )

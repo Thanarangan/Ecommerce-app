@@ -11,6 +11,7 @@ export function RegisterPage() {
   const [form, setForm] = useState({
     email: '',
     password: '',
+    role: 'CUSTOMER',
     username: '',
   })
   const [loading, setLoading] = useState(false)
@@ -42,11 +43,28 @@ export function RegisterPage() {
     <>
       <div className="auth-card__header">
         <p className="eyebrow">Start shopping</p>
-        <h1>Create customer account</h1>
-        <p>Registration sends the backend fields exactly as required.</p>
+        <h1>Create account</h1>
+        <p>Choose customer or seller account type before registration.</p>
       </div>
 
       <form className="form-stack" onSubmit={handleSubmit}>
+        <div className="role-switch" role="group" aria-label="Account type">
+          <button
+            className={form.role === 'CUSTOMER' ? 'chip chip--active' : 'chip'}
+            type="button"
+            onClick={() => setForm((current) => ({ ...current, role: 'CUSTOMER' }))}
+          >
+            Customer
+          </button>
+          <button
+            className={form.role === 'SELLER' ? 'chip chip--active' : 'chip'}
+            type="button"
+            onClick={() => setForm((current) => ({ ...current, role: 'SELLER' }))}
+          >
+            Seller
+          </button>
+        </div>
+
         <label className="field">
           <span>Username</span>
           <div className="field__control">
